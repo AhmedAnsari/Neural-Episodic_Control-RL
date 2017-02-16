@@ -8,7 +8,8 @@ Created on Sat Aug 20 15:05:34 2016
 import gym
 import numpy as np
 from numba import jit
-import scipy.misc.imresize as imresize
+from skimage.transform import resize
+import random
 
 @jit
 def grayscale(raw_screen):
@@ -27,24 +28,33 @@ def maximage(x,y,z):
 
 class Environment(object):
     def __init__(self, config):
-        self.START_NEW_GAME = True
+        self.START_NEW_GAME = False
         self._env = gym.make(config.GAME)
-        self._env.reset()
+        self.reset()
         self.DISPLAY = config.DISPLAY
         self.config = config
+        self.frame_history = 0
+        self.A = np.random.random((config.final_size, 84*84))#Transformation matrix
 
     # reset environment
     def reset(self):
         self._env.reset()
-        self.terminal = False
+        self.START_NEW_GAME = False
+        action0 = 0
+        #ensure random start
+        for _ in range(random.randrange(1,self.config.noopmax+1)):
+            self.step(action0)
+            self.frame_history -= 1 #dont count frames when performing noop for stachisticity
 
     # preprocess raw image to 84*84 Y channel(luminance)
     def preprocess(self):
         self._screen = grayscale(self._screen_)
-        self._screen = imresize(self._screen,(84,84))
+        self._screen = resize(self._screen,(84,84))
+        self._screen = np.dot(self.A , self._screen)
 
     def step(self,action):
         self._screen_, self.reward, self.terminal, _ = self._env.step(action)
+        self.frame_history += 1
 
     def action_size(self):
         return self._env.action_space.n

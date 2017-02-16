@@ -20,6 +20,7 @@ class Memory:
         self.Qtable = [pylru.lrucache(config.memory_size) for action in range(self.config.action_set_size)]
         self.config = config
         self.flann = pyflann.FLANN()
+        self.count = [0]*self.config.action_set_size
 
     def add(self, state, action, Return):
         key = tuple(state)
@@ -28,11 +29,18 @@ class Memory:
         else:
             self.Qtable[action][key] = max(self.Qtable[action][key],Return)
 
+        self.count[action] += 1
+
     def getQval(self,state,action):
         key = tuple(state)
         if key in self.Qtable[action]:
             return self.Qtable[action][key]
         else:
-            dataset = np.array([i for i in self.Qtable[action].keys()])
-            nearest_k_indices = self.flann.nn(dataset, state, self.config.k, algorithm="kmeans", branching=32, iterations=7, checks=16)[0]
-            self.Qtable[action][key] = np.mean([self.Qtable[action][dataset[i]] for i in nearest_k_indices])
+            if self.count[action] > self.config.k: #to handle borderline cases
+                dataset = np.array([i for i in self.Qtable[action].keys()])
+                nearest_k_indices, _ = self.flann.nn(dataset, state, self.config.k, algorithm="kmeans", branching=32, iterations=7, checks=16)
+                nearest_k_indices = nearest_k_indices[0]
+                self.Qtable[action][key] = np.mean([self.Qtable[action][dataset[i]] for i in nearest_k_indices])
+            else:
+                self.Qtable[action][key] = 0
+        return self.Qtable[action][key]
