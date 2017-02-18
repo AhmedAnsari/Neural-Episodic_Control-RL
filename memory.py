@@ -26,10 +26,9 @@ class Memory:
         key = tuple(state)
         if key not in self.Qtable[action]:
             self.Qtable[action][key] = Return
+            self.count[action] += 1
         else:
             self.Qtable[action][key] = max(self.Qtable[action][key],Return)
-
-        self.count[action] += 1
 
     def getQval(self,state,action):
         key = tuple(state)
