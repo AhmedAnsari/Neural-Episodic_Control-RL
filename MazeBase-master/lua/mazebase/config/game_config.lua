@@ -4,11 +4,12 @@ g_opts.multigames = {}
 -------------------
 --some shared RangeOpts
 --current min, current max, min max, max max, increment
-local mapH = torch.Tensor{5,10,5,10,1}
-local mapW = torch.Tensor{5,10,5,10,1}
-local blockspct = torch.Tensor{0,.2,0,.2,.01}
-local waterpct = torch.Tensor{0,.2,0,.2,.01}
-
+local mapH = torch.Tensor{10,10,5,10,1}
+local mapW = torch.Tensor{10,10,5,10,1}
+-- local blockspct = torch.Tensor{0,.2,0,.2,.01}
+-- local waterpct = torch.Tensor{0,.2,0,.2,.01}
+local blockspct = torch.Tensor{0,0,0,.2,.01}
+local waterpct = torch.Tensor{0,0,0,.2,.01}
 
 -------------------
 --some shared StaticOpts
@@ -227,5 +228,24 @@ BlockedDoorOpts.StaticOpts = BlockedDoorStaticOpts
 
 g_opts.multigames.BlockedDoor = BlockedDoorOpts
 
+-- SingleGoals:
+local SingleGoalRangeOpts = {}
+SingleGoalRangeOpts.mapH = mapH:clone()
+SingleGoalRangeOpts.mapW = mapW:clone()
+SingleGoalRangeOpts.blockspct = blockspct:clone()
+SingleGoalRangeOpts.waterpct = waterpct:clone()
+
+local SingleGoalStaticOpts = {}
+for i,j in pairs(sso) do SingleGoalStaticOpts[i] = j end
+
+SingleGoalOpts ={}
+SingleGoalOpts.RangeOpts = SingleGoalRangeOpts
+SingleGoalOpts.StaticOpts = SingleGoalStaticOpts
+
+g_opts.multigames.SingleGoal = SingleGoalOpts
 
 return g_opts
+
+
+--dmittal g_opts is a table. g_opts.multigames is another table where keys are different
+--game names and is store different option values for each game

@@ -93,7 +93,23 @@ function MazeMap:to_image()
     local img_pushableblock = image.load(self.img_path .. '/pushableblock.png')
     local img_bfire = image.load(self.img_path .. '/blue_fire.png')
     local img_rfire = image.load(self.img_path .. '/red_fire.png')
-    local img_agent = image.load(self.img_path .. '/agent.png')
+    -- local img_agent = image.load(self.img_path .. '/agent.png')
+    local img_agent = image.load(self.img_path .. '/agent.jpg')
+    local img_box = image.load(self.img_path .. '/box.jpg')
+    local img_candy = image.load(self.img_path .. '/candy.jpg')
+    local img_cow = image.load(self.img_path .. '/cow.jpg')
+    local img_diamond = image.load(self.img_path .. '/diamond.jpg')
+    local img_duck = image.load(self.img_path .. '/duck.jpg')
+    local img_egg = image.load(self.img_path .. '/egg.jpg')
+    local img_enemy = image.load(self.img_path .. '/enemy.jpg')
+    local img_heart = image.load(self.img_path .. '/heart.jpg')
+    local img_meat = image.load(self.img_path .. '/meat.jpg')
+    local img_milk = image.load(self.img_path .. '/milk.jpg')
+    local img_pig = image.load(self.img_path .. '/pig.jpg')
+    local img_rock = image.load(self.img_path .. '/rock.jpg')
+    local img_stone = image.load(self.img_path .. '/stone.jpg')
+    local img_tree = image.load(self.img_path .. '/tree.jpg')
+    local img_wood = image.load(self.img_path .. '/wood.jpg')
 
     local img_starenemy = {}
     img_starenemy[1] = image.load(self.img_path .. '/starenemy1.png')
@@ -114,6 +130,38 @@ function MazeMap:to_image()
                         c:copy(img_pushableblock)
             		elseif item.type == 'water' then
                         c:copy(img_water)
+                    --dmittal
+                    elseif item.type == 'box' then
+                        c:copy(img_box)
+                    elseif item.type == 'candy' then
+                        c:copy(img_candy)
+                    elseif item.type == 'cow' then
+                        c:copy(img_cow)
+                    elseif item.type == 'diamond' then
+                        c:copy(img_diamond)
+                    elseif item.type == 'duck' then
+                        c:copy(img_duck)
+                    elseif item.type == 'egg' then
+                        c:copy(img_egg)
+                    elseif item.type == 'enemy' then
+                        c:copy(img_enemy)
+                    elseif item.type == 'heart' then
+                        c:copy(img_heart)
+                    elseif item.type == 'meat' then
+                        c:copy(img_meat)
+                    elseif item.type == 'milk' then
+                        c:copy(img_milk)
+                    elseif item.type == 'pig' then
+                        c:copy(img_pig)
+                    elseif item.type == 'rock' then
+                        c:copy(img_rock)
+                    elseif item.type == 'stone' then
+                        c:copy(img_stone)
+                    elseif item.type == 'tree' then
+                        c:copy(img_tree)
+                    elseif item.type == 'wood' then
+                        c:copy(img_wood)
+                    
                     elseif item.type == 'goal' then
                         for a = 1, 9 do
                             if item.name == 'goal' .. a then

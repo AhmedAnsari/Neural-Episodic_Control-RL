@@ -19,7 +19,13 @@ function MazeAgent:__init(attr, maze)
     self.actions = {}       -- id -> func
     self.nactions = 0
     self:add_move_actions()
-    self:add_toggle_action()
+
+    -- dmittal
+    self:add_pickup_actions()
+    self.pickable = {'candy', 'diamond', 'pork', 'milk', 'wood', 'box', 'duck', 'egg', 'heart', 'stone'}
+    self.visitable = {'cow', 'enemy', 'pig', 'rock', 'tree', 'candy', 'diamond', 'pork', 'milk', 'wood'}
+    -- self.pickable = {candy=ture, diamond=ture, pork=ture, milk=ture, wood=ture, box=ture, duck=ture, egg=ture, heart=ture, stone=ture}
+    -- self.visitable = {cow=ture, enemy=ture, pig=ture, rock=ture, tree=ture, candy=ture, diamond=ture, pork=ture, milk=ture, wood=ture}
     if maze.crumb_action == 1 then
         self:add_breadcrumb_action()
     end
@@ -56,6 +62,68 @@ function MazeAgent:add_action(name, f)
         self.actions[self.action_ids[name]] = f
     end
 end
+
+-- dmittal add pickup actions according to oh's paper
+function MazeAgent:add_pickup_actions()
+    pick_x = self.loc.x
+    pick_y = self.loc.y
+
+    function is_pickable(e_type)
+        local flag=false
+        for _, __ in ipairs(self.pickable) do
+            if e_type==__ then
+                flag=true
+            end
+        end
+        return flag
+    end
+    
+    self:add_action('pick_up',
+        function(self)
+            if self.map:is_loc_reachable(self.loc.y - 1, self.loc.x) then
+                local l = self.map.items[self.loc.y - 1][self.loc.x]
+                for _, e in ipairs(l) do
+                    if is_pickable(e.type) then
+                        self.map:remove_item(e)
+                    end
+                end
+            end
+        end)
+    self:add_action('pick_down',
+        function(self)
+            if self.map:is_loc_reachable(self.loc.y + 1, self.loc.x) then
+                local l = self.map.items[self.loc.y + 1][self.loc.x]
+                for _, e in ipairs(l) do
+                    if is_pickable(e.type) then
+                        self.map:remove_item(e)
+                    end
+                end
+            end
+        end)
+    self:add_action('pick_left',
+        function(self)
+            if self.map:is_loc_reachable(self.loc.y, self.loc.x - 1) then
+                local l = self.map.items[self.loc.y][self.loc.x - 1]
+                for _, e in ipairs(l) do
+                    if is_pickable(e.type) then
+                        self.map:remove_item(e)
+                    end
+                end
+            end
+        end)
+    self:add_action('pick_right',
+        function(self)
+            if self.map:is_loc_reachable(self.loc.y, self.loc.x + 1) then
+                local l = self.map.items[self.loc.y][self.loc.x + 1]
+                for _, e in ipairs(l) do
+                    if is_pickable(e.type) then
+                        self.map:remove_item(e)
+                    end
+                end
+            end
+        end)
+end
+
 
 function MazeAgent:add_move_actions()
     self:add_action('up',
