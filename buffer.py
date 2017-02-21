@@ -36,4 +36,4 @@ class Buffer(object):
         self.current = 0
 
     def isempty(self):
-        return bool(self.current)
+        return not(bool(self.current))

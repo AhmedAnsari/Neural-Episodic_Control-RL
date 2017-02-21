@@ -17,8 +17,8 @@ np.random.seed(10)
 class Memory:
     def __init__(self, config):
         self.memory_size = config.memory_size
-        self.Qtable = [pylru.lrucache(config.memory_size) for action in range(self.config.action_set_size)]
         self.config = config
+        self.Qtable = [pylru.lrucache(config.memory_size) for action in range(self.config.action_set_size)]
         self.flann = pyflann.FLANN()
         self.count = [0]*self.config.action_set_size
 

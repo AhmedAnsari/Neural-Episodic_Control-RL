@@ -20,5 +20,5 @@ class Control(object):
             self.qtable.add(s,a,r)
 
     def getaction(self,state):
-        vals = np.array([self.qtable.getQval[action][state] for action in range(self.config.action_set_size)])
+        vals = np.array([self.qtable.getQval(state,action) for action in range(self.config.action_set_size)])
         return np.random.choice(np.flatnonzero(vals == vals.max()))

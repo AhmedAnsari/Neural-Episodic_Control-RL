@@ -6,13 +6,14 @@ class Config:
         self.T = 10000 #max episode length
         self.k = 11 #Knearest neighbout
         self.K = 4 #frame skip
-        self.noop = 30
-        self.memorysize = 1000000
+        self.noopmax = 30
+        self.memory_size = 1000000
         self.epsilon = 0.005
         self.final_size = 64
         self.action_set_size = None
         self.DISPLAY = False
         self.GAME = 'Breakout-v0'
+        self.clipR = True
 
     def setaction_set_size(self,N):
         self.action_set_size = N

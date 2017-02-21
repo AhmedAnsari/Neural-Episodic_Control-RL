@@ -23,18 +23,19 @@ def maximage(x,y,z):
     N = x.shape[1]
     for i in range(M):
         for j in range(N):
-            z[i,j] = max(x[i,j],y[i,j])
+            for k in range(3):
+                z[i,j,k] = max(x[i,j,k],y[i,j,k])
     return z
 
 class Environment(object):
     def __init__(self, config):
         self.START_NEW_GAME = False
-        self._env = gym.make(config.GAME)
-        self.reset()
-        self.DISPLAY = config.DISPLAY
         self.config = config
+        self._env = gym.make(config.GAME)
+        self.DISPLAY = config.DISPLAY
         self.frame_history = 0
         self.A = np.random.random((config.final_size, 84*84))#Transformation matrix
+        self.reset()
 
     # reset environment
     def reset(self):
@@ -50,7 +51,7 @@ class Environment(object):
     def preprocess(self):
         self._screen = grayscale(self._screen_)
         self._screen = resize(self._screen,(84,84))
-        self._screen = np.dot(self.A , self._screen)
+        self._screen = np.dot(self.A , self._screen.reshape(84*84,1)).reshape(self.config.final_size)
 
     def step(self,action):
         self._screen_, self.reward, self.terminal, _ = self._env.step(action)
@@ -89,9 +90,9 @@ class Environment(object):
             if terminal:
                 break
 
-        out = np.zeros(prevframe.shape,dtype = np.uint8)
+        out = np.zeros(observation.shape,dtype = np.uint8)
         if not terminal:
-            out = maximage(prevframe,observation,out)
+            maximage(prevframe,observation,out)
 
         self._screen_ = out
 

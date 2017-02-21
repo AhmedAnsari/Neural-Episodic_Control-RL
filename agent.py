@@ -38,7 +38,7 @@ def main():
         episode_length += 1
         episode_buffer.add(s,a,r)
 
-        if (env.START_NEW_GAME or episode_length > config.T) and not(episode_buffer.isempty):#then epsiode ends
+        if (env.START_NEW_GAME or episode_length >= config.T) and not(episode_buffer.isempty()):#then epsiode ends
             episode_values = episode_buffer.get_returns()
             brain.update_table(episode_values)
             episode_buffer.reset()
