@@ -39,7 +39,7 @@ class Environment(object):
         self.A = np.random.random((config.final_size, 84*84))#Transformation matrix
         self.reset()
         self.rewards_list = deque(maxlen=2)
-        self.rewards_list.append([(0,0)])
+        self.rewards_list.append((0,0))
         self.plt = Plotter()
     # reset environment
     def reset(self):
