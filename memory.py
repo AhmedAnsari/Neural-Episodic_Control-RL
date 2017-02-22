@@ -10,6 +10,7 @@ import random
 import numpy as np
 import pylru
 import pyflann
+from annoy import AnnoyIndex
 #setting up seed for repititin experiments
 random.seed(1)
 np.random.seed(10)
@@ -37,9 +38,23 @@ class Memory:
         else:
             if self.count[action] > self.config.k: #to handle borderline cases
                 dataset = np.array([i for i in self.Qtable[action].keys()])
-                nearest_k_indices, _ = self.flann.nn(dataset, state, self.config.k, algorithm="kmeans", branching=32, iterations=7, checks=16)
-                nearest_k_indices = nearest_k_indices[0]
-                self.Qtable[action][key] = np.mean([self.Qtable[action][(dataset[i])] for i in nearest_k_indices])
+                if self.config.KNNmethod == "FLANN":
+                    nearest_k_indices, _ = self.flann.nn(dataset, state, self.config.k, algorithm="kmeans", branching=32, iterations=7, checks=16)
+                    nearest_k_indices = nearest_k_indices[0]
+
+
+                elif self.config.KNNmethod == "ANNOY":
+                        f = self.config.final_size
+                        t = AnnoyIndex(f)
+                        count=0
+                        for i in self.Qtable[action].keys():
+                            t.add_item(count,i)
+                            count+=1
+                        t.build(10)
+                        nearest_k_indices = t.get_nns_by_vector(state,self.config.k)
+
+                self.Qtable[action][key] = np.mean([self.Qtable[action][tuple(dataset[i])] for i in nearest_k_indices])
+
             else:
                 self.Qtable[action][key] = 0
         return self.Qtable[action][key]

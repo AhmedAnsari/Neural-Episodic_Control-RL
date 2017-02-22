@@ -14,6 +14,7 @@ class Config:
         self.DISPLAY = False
         self.GAME = 'MsPacman-v0'
         self.clipR = True
+        self.KNNmethod = "ANNOY"
 
     def setaction_set_size(self,N):
         self.action_set_size = N
