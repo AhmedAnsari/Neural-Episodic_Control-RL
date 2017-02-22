@@ -93,7 +93,7 @@ class Environment(object):
             Reward += localreward
 
             if start_lives > self._env.ale.lives():
-                Reward -= 1.0
+#                Reward -= 1.0
                 terminal = True
 
             if terminal:
