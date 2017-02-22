@@ -11,6 +11,8 @@ from tqdm import tqdm
 from controller import Control
 from buffer import Buffer
 
+
+
 def main():
     config = Config()
     env = Environment(config)
@@ -25,7 +27,7 @@ def main():
     episode_buffer = Buffer(config)
     episode_length = 0
     while(env.frame_history <= config.MAX_FRAMES):
-
+        past_num_frames = env.frame_history
         #algorithm beigns now
 
         if episode_length == 0:
@@ -44,7 +46,9 @@ def main():
             episode_buffer.reset()
             episode_length = 0
 
-        pbar.update(config.K)
+        pbar.update(env.frame_history-past_num_frames)
+
+
 
 
     env.close_render()

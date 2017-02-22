@@ -3,7 +3,7 @@
 class Config:
     def __init__(self):
         self.MAX_FRAMES = 20000000 #max number of epochs
-        self.T = 10000 #max episode length
+        self.T = 1000 #max episode length
         self.k = 11 #Knearest neighbout
         self.K = 4 #frame skip
         self.noopmax = 30

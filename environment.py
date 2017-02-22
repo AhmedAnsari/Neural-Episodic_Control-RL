@@ -10,6 +10,8 @@ import numpy as np
 from numba import jit
 from skimage.transform import resize
 import random
+from plotter import Plotter
+from collections import deque
 
 @jit
 def grayscale(raw_screen):
@@ -36,7 +38,9 @@ class Environment(object):
         self.frame_history = 0
         self.A = np.random.random((config.final_size, 84*84))#Transformation matrix
         self.reset()
-
+        self.rewards_list = deque(maxlen=2)
+        self.rewards_list.append([(0,0)])
+        self.plt = Plotter()
     # reset environment
     def reset(self):
         self._env.reset()
@@ -67,6 +71,11 @@ class Environment(object):
     def close_render(self):
         if self.DISPLAY ==True:
             self._env.render(close=True)
+
+    def evaluate(self):
+        s,r = self.rewards_list[-1]
+
+        self.plt.writesummary([(s,r/float(s))])
 
     def act(self,action):
         Reward = 0
@@ -105,5 +114,9 @@ class Environment(object):
 
         if terminal:
             self.START_NEW_GAME = True
+
+        #for evaluations of avg_r
+        self.rewards_list.append((self.frame_history,self.rewards_list[-1][1]+clip_reward))
+        self.evaluate()
 
         return self._screen, action, clip_reward, terminal
