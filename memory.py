@@ -39,7 +39,7 @@ class Memory:
                 dataset = np.array([i for i in self.Qtable[action].keys()])
                 nearest_k_indices, _ = self.flann.nn(dataset, state, self.config.k, algorithm="kmeans", branching=32, iterations=7, checks=16)
                 nearest_k_indices = nearest_k_indices[0]
-                self.Qtable[action][key] = np.mean([self.Qtable[action][dataset[i]] for i in nearest_k_indices])
+                self.Qtable[action][key] = np.mean([self.Qtable[action][(dataset[i])] for i in nearest_k_indices])
             else:
                 self.Qtable[action][key] = 0
         return self.Qtable[action][key]

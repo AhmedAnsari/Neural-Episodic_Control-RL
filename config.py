@@ -12,7 +12,7 @@ class Config:
         self.final_size = 64
         self.action_set_size = None
         self.DISPLAY = False
-        self.GAME = 'Breakout-v0'
+        self.GAME = 'MsPacman-v0'
         self.clipR = True
 
     def setaction_set_size(self,N):
