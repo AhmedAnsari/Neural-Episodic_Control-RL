@@ -56,5 +56,5 @@ class Memory:
                 self.Qtable[action][key] = np.mean([self.Qtable[action][tuple(dataset[i])] for i in nearest_k_indices])
 
             else:
-                self.Qtable[action][key] = 0
+                self.Qtable[action][key] = 0#@mecheckbughere
         return self.Qtable[action][key]

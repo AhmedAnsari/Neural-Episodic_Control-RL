@@ -8,6 +8,7 @@ Created on Tue Feb 21 19:23:44 2017
 
 import tensorflow as tf
 
+
 class Plotter(object):
     def __init__(self):
         self.reward = tf.placeholder('float32',name='Average_Reward')
