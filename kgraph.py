@@ -9,7 +9,7 @@ Created on Fri Feb 24 00:36:32 2017
 import pykgraph
 
 
-class MylruMem(object):
+class Kgraph(object):
     def __init__(self,config):
         self.dataset = []
     def add_item(self,i,item):
