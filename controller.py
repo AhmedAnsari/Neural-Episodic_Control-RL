@@ -25,7 +25,6 @@ class Control(object):
     def getaction(self,state):
         if np.random.random() >= self.config.epsilon:
             vals = np.array([self.qtable.getQval(state,action) for action in range(self.config.action_set_size)])
-            print vals
             return np.random.choice(np.flatnonzero(vals == vals.max()))
         else:
             return np.random.choice(range(self.config.action_set_size))

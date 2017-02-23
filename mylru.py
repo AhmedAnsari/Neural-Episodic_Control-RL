@@ -5,12 +5,10 @@ Created on Thu Feb 23 15:28:28 2017
 
 @author: ghulamahmedansari
 """
-#mylru datastructure
-#want multithreaded least recently used index finder
 import numpy as np
-#from multiprocessing import Pool
 from annoy import AnnoyIndex
 import sys
+
 
 class MylruMem(object):
     def __init__(self,config):
@@ -98,9 +96,9 @@ class MylruMem(object):
             assert 0 == 1
 
     def buildtree(self,action):
-        if self.Flag_Build_New_Tree == True:
+        if self.Flag_Build_New_Tree[action] == True:
             self.statetree[action].build(self.config.n_trees)
-            self.Flag_Build_New_Tree = False
+            self.Flag_Build_New_Tree[action] = False
         return self.statetree[action]
 
     def getQval(self,state,action):
@@ -115,6 +113,7 @@ class MylruMem(object):
                 states = [tuple(t.get_item_vector(i)) for i in nearest_k_indices]
                 result = np.mean([self.Qtable[action][s] for s in states])
                 [self.update_age(s,action) for s in states]
+
                 return result
             else:
                 return 0
