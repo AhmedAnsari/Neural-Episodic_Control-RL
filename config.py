@@ -15,10 +15,10 @@ class Config:
         self.GAME = 'MsPacman-v0'
         self.clipR = True
         self.KNNmethod = "ANNOY"
-        self.n_trees = 10
+        self.n_trees = 7
         self.maxindexsize = self.memory_size + 10000
         self.Use_Mylru = True
-        if self.Use_Mylru == True:
+        if self.Use_Mylru == True and self.KNNmethod == "FLANN":
             self.KNNmethod = "ANNOY"
     def setaction_set_size(self,N):
         self.action_set_size = N

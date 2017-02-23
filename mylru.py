@@ -8,14 +8,17 @@ Created on Thu Feb 23 15:28:28 2017
 import numpy as np
 from annoy import AnnoyIndex
 import sys
-
+from kgraph import Kgraph
 
 class MylruMem(object):
     def __init__(self,config):
         self.config = config
         self.dimension = self.config.final_size
         self.memory_size = config.memory_size
-        self.statetree = [AnnoyIndex(self.dimension) for action in range(self.config.action_set_size)]
+        if self.config.KNNmethod == "ANNOY":
+            self.statetree = [AnnoyIndex(self.dimension) for action in range(self.config.action_set_size)]
+        elif self.config.KNNmethod == "KGRAPH":
+            self.statetree = [Kgraph(config) for action in range(self.config.action_set_size)]
         self.count = [0]*self.config.action_set_size
         self.age_history = [{} for action in range(self.config.action_set_size)]
         self.Qtable = [{} for action in range(self.config.action_set_size)]
@@ -60,12 +63,20 @@ class MylruMem(object):
                 del self.age_history[action][s]
                 self.count[action]-=1
             #now remake the tree
-            self.statetree[action] = AnnoyIndex(self.dimension)
-            _count = 0
-            for s in self.Qtable[action].keys():
-                self.statetree[action].add_item(_count,s)
-                _count+=1
-            assert _count == self.count[action]
+            if self.config.KNNmethod == "ANNOY":
+                self.statetree[action] = AnnoyIndex(self.dimension)
+                _count = 0
+                for s in self.Qtable[action].keys():
+                    self.statetree[action].add_item(_count,s)
+                    _count+=1
+                assert _count == self.count[action]
+            elif self.config.KNNmethod == "KGRAPH":
+                self.statetree[action] = Kgraph(self.config)
+                _count = 0
+                for s in self.Qtable[action].keys():
+                    self.statetree[action].add_item(_count,s)
+                    _count+=1
+                assert _count == self.count[action]
             self.deleted_states[action] = []
             self._add(state,action,Return)#now call again after clearing buffer
         else:
