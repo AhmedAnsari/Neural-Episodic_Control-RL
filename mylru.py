@@ -121,7 +121,11 @@ class MylruMem(object):
             if self.count[action] > self.config.k: #to handle borderline cases
                 t = self.buildtree(action)
                 nearest_k_indices = t.get_nns_by_vector(state,self.config.k)
-                states = [tuple(t.get_item_vector(i)) for i in nearest_k_indices]
+                if self.config.KNNmethod == "ANNOY":
+                    states = [tuple(t.get_item_vector(i)) for i in nearest_k_indices]
+                elif self.config.KNNmethod == "KGRAPH":
+                    states = [tuple(np.asarray(self.statetree[action].dataset[i], dtype=np.float32)) for i in nearest_k_indices]
+                    
                 result = np.mean([self.Qtable[action][s] for s in states])
                 [self.update_age(s,action) for s in states]
 
