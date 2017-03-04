@@ -90,13 +90,13 @@ class MylruMem(object):
     def add(self,state,action,Return):#superior function to add an element
         if type(state)!=tuple:
             state = tuple(state.astype(np.int32))
-
-        if not self.isin(state,action,self.Qtable[action]):
+        Flag = self.isin(state,action,self.Qtable[action])
+        if not Flag:
 #        if state not in self.Qtable[action].keys():
             self._add(state,action,Return)
             self.Flag_Build_New_Tree[action] = True
 
-        elif self.isin(state,action,self.Qtable[action]) and self.isin(state,action,self.deleted_states[action]):
+        elif Flag and self.current in self.deleted_states[action]:
 #        elif state in self.Qtable[action].keys() and state in self.deleted_states[action]:
 
             state = self.current
