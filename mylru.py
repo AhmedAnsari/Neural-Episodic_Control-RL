@@ -8,7 +8,7 @@ Created on Thu Feb 23 15:28:28 2017
 import numpy as np
 from annoy import AnnoyIndex
 import sys
-from kgraph import Kgraph
+#from kgraph import Kgraph
 
 class MylruMem(object):
     def __init__(self,config):
@@ -26,6 +26,8 @@ class MylruMem(object):
         self.deleted_states = [[] for action in range(self.config.action_set_size)]
         self.timestep = 0
         self.Flag_Build_New_Tree = [True for action in range(self.config.action_set_size)]
+        #for optimization
+        self.current = None
 
     def update_age(self,state,action):
         self.age_history[action][state] = self.timestep
@@ -88,23 +90,33 @@ class MylruMem(object):
     def add(self,state,action,Return):#superior function to add an element
         if type(state)!=tuple:
             state = tuple(state.astype(np.int32))
-        if state not in self.Qtable[action].keys():
+
+        if not self.isin(state,action,self.Qtable[action]):
+#        if state not in self.Qtable[action].keys():
             self._add(state,action,Return)
             self.Flag_Build_New_Tree[action] = True
-        elif state in self.Qtable[action].keys() and state not in self.deleted_states[action]:
-            self.Qtable[action][state] = max(self.Qtable[action][state],Return)
-            self.update_age(state,action)
-        elif state not in self.Qtable[action].keys() and state in self.deleted_states[action]:
+
+        elif not self.isin(state,action,self.Qtable[action]) and self.isin(state,action,self.deleted_states[action]):
+#        elif state not in self.Qtable[action].keys() and state in self.deleted_states[action]:
+
+            state = self.current
             self.Qtable[action][state] = max(self.Qtable[action][state],Return)
             self.deleted_states[action].remove(state)
             self.update_age(state,action)
 
             todeletestate = self.getoldest(action)
             self.deleted_states[action].append(todeletestate)
-            self.age_history[action][todeletestate] = sys.maxint #to ensure dont delete same state again
+            self.age_history[action][todeletestate] = sys.maxint/2 #to ensure dont delete same state again
         else:
-            print "ERROR: state is both deleted and undeleted"
-            assert 0 == 1
+#        elif self.isin(state,action,self.Qtable[action]) and not self.isin(state,action,self.deleted_states[action]):
+#        elif state in self.Qtable[action].keys() and state not in self.deleted_states[action]:
+            state = self.current
+            self.Qtable[action][state] = max(self.Qtable[action][state],Return)
+            self.update_age(state,action)
+
+#        else:
+#            print "ERROR: state is both deleted and undeleted"
+#            assert 0 == 1
 
     def buildtree(self,action):
         if self.Flag_Build_New_Tree[action] == True:
@@ -125,10 +137,28 @@ class MylruMem(object):
                     states = [tuple(t.get_item_vector(i)) for i in nearest_k_indices]
                 elif self.config.KNNmethod == "KGRAPH":
                     states = [tuple(np.asarray(self.statetree[action].dataset[i], dtype=np.float32)) for i in nearest_k_indices]
-                    
+
                 result = np.mean([self.Qtable[action][s] for s in states])
                 [self.update_age(s,action) for s in states]
 
                 return result
             else:
                 return 0
+    def isin(self,state,action,dic):
+        self.current = state
+        if state in dic:
+            return True
+        elif self.count[action] > self.config.k:
+            t = self.buildtree(action)
+            nearest_k_indices = t.get_nns_by_vector(state,1,include_distances=True)
+            i,d = nearest_k_indices
+            i = i[0]
+            d = d[0]
+#            print i,d,np.linalg.norm(state)
+            if 1.0*d/np.linalg.norm(state)<=1e-9:
+                self.current = tuple(np.array(t.get_item_vector(i)).astype(np.int32))
+                return True
+            else:
+                return False
+        else:
+            return False

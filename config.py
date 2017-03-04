@@ -14,7 +14,7 @@ class Config:
         self.DISPLAY = False
         self.GAME = 'MsPacman-v0'
         self.clipR = True
-        self.KNNmethod = "KGRAPH"
+        self.KNNmethod = "ANNOY"
         self.n_trees = 7
         self.maxindexsize = self.memory_size + 10000
         self.Use_Mylru = True
