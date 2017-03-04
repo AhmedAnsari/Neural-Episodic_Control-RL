@@ -154,9 +154,13 @@ class MylruMem(object):
             i,d = nearest_k_indices
             i = i[0]
             d = d[0]
-            if 1.0*d/np.linalg.norm(state)<=1e-9    :
-                self.current = tuple(np.array(t.get_item_vector(i)).astype(np.int32))
-                return True
+            if 1.0*d/np.linalg.norm(state)<=1e-9:
+                temp = tuple(np.array(t.get_item_vector(i)).astype(np.int32))
+                if temp in dic:
+                    self.current = temp
+                    return True
+                else:
+                    return False
             else:
                 return False
         else:
