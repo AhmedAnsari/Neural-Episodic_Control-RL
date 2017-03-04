@@ -96,8 +96,8 @@ class MylruMem(object):
             self._add(state,action,Return)
             self.Flag_Build_New_Tree[action] = True
 
-        elif not self.isin(state,action,self.Qtable[action]) and self.isin(state,action,self.deleted_states[action]):
-#        elif state not in self.Qtable[action].keys() and state in self.deleted_states[action]:
+        elif self.isin(state,action,self.Qtable[action]) and self.isin(state,action,self.deleted_states[action]):
+#        elif state in self.Qtable[action].keys() and state in self.deleted_states[action]:
 
             state = self.current
             self.Qtable[action][state] = max(self.Qtable[action][state],Return)
@@ -154,8 +154,7 @@ class MylruMem(object):
             i,d = nearest_k_indices
             i = i[0]
             d = d[0]
-#            print i,d,np.linalg.norm(state)
-            if 1.0*d/np.linalg.norm(state)<=1e-9:
+            if 1.0*d/np.linalg.norm(state)<=1e-9    :
                 self.current = tuple(np.array(t.get_item_vector(i)).astype(np.int32))
                 return True
             else:
