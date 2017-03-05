@@ -26,6 +26,8 @@ def main():
 
     episode_buffer = Buffer(config)
     episode_length = 0
+    avg_rwd_per_episode = []
+
     while(env.frame_history <= config.MAX_FRAMES):
         past_num_frames = env.frame_history
         #algorithm beigns now
@@ -42,6 +44,7 @@ def main():
 
         if (env.START_NEW_GAME or episode_length >= config.T) and not(episode_buffer.isempty()):#then epsiode ends
             episode_values = episode_buffer.get_returns()
+            avg_rwd_per_episode.append(float(episode_values[0])/episode_buffer.current)
             brain.update_table(episode_values)
             episode_buffer.reset()
             episode_length = 0
