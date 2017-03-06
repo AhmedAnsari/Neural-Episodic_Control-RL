@@ -2,7 +2,10 @@
 
 class Config:
     def __init__(self):
-        self.MAX_FRAMES = 120000#20000000 #max number of epochs
+        self.MAX_FRAMES = 20000000#20000000 #max number of epochs
+        self.NUM_EVAL_STEPS  = 10000
+        self.EVAL_FREQ = 50000
+
         self.T = 1000 #max episode length
         self.k = 11 #Knearest neighbout
         self.K = 4 #frame skip
@@ -20,6 +23,7 @@ class Config:
         self.Use_Mylru = True
         if self.Use_Mylru == True and self.KNNmethod == "FLANN":
             self.KNNmethod = "ANNOY"
+
     def setaction_set_size(self,N):
         self.action_set_size = N
 

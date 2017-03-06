@@ -10,8 +10,6 @@ import numpy as np
 from numba import jit
 from skimage.transform import resize
 import random
-from plotter import Plotter
-from collections import deque
 
 @jit
 def grayscale(raw_screen):
@@ -38,9 +36,9 @@ class Environment(object):
         self.frame_history = 0
         self.A = np.random.random((config.final_size, 84*84))#Transformation matrix
         self.reset()
-        self.rewards_list = deque(maxlen=2)
-        self.rewards_list.append((0,0))
-        self.plt = Plotter()
+#        self.rewards_list = deque(maxlen=2)
+#        self.rewards_list.append((0,0))
+#        self.plt = Plotter()
     # reset environment
     def reset(self):
         self._env.reset()
@@ -72,10 +70,10 @@ class Environment(object):
         if self.DISPLAY ==True:
             self._env.render(close=True)
 
-    def evaluate(self):
-        s,r = self.rewards_list[-1]
-
-        self.plt.writesummary([(s,r/float(s))])
+#    def evaluate(self):
+#        s,r = self.rewards_list[-1]
+#
+#        self.plt.writesummary([(s,r/float(s))])
 
     def act(self,action):
         Reward = 0
@@ -115,8 +113,47 @@ class Environment(object):
         if terminal:
             self.START_NEW_GAME = True
 
-        #for evaluations of avg_r
-        self.rewards_list.append((self.frame_history,self.rewards_list[-1][1]+clip_reward))
-        self.evaluate()
+#        #for evaluations of avg_r
+#        self.rewards_list.append((self.frame_history,self.rewards_list[-1][1]+clip_reward))
+#        self.evaluate()
+
+        return self._screen, action, clip_reward, terminal
+class Eval_Environment(Environment):
+    def __init__(self, config):
+        super(Eval_Environment, self).__init__(config)
+
+    def act(self,action):
+        Reward = 0
+        terminal = False
+
+        for _ in xrange(self.config.K):
+            #to store difference of frames
+            if _ == self.config.K - 2:
+                prevframe = self._screen_.copy()
+
+            self.render()
+            self.step(action)
+            observation,localreward,terminal = self._screen_,self.reward,self.terminal
+            Reward += localreward
+
+            if terminal:
+                break
+
+        out = np.zeros(observation.shape,dtype = np.uint8)
+        if not terminal:
+            maximage(prevframe,observation,out)
+
+        self._screen_ = out
+
+        self.preprocess()
+
+        clip_reward = 0
+
+        if self.config.clipR:
+            clip_reward = np.clip(Reward,-1,1)
+
+        if terminal:
+            self.START_NEW_GAME = True
+
 
         return self._screen, action, clip_reward, terminal

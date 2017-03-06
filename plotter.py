@@ -23,9 +23,8 @@ class Plotter(object):
 
         self.summary_op = tf.merge_all_summaries()
 
-    def writesummary(self,rewardlist):
-        for s,r in rewardlist:
-            summary = self.sess.run([self.summary_op], feed_dict={self.reward : r})
+    def writesummary(self,r):
+        summary = self.sess.run(self.summary_op, feed_dict={self.reward : r})
 
-            # write log
-            self.writer.add_summary(summary[0], s)
+        # write log
+        self.writer.add_summary(summary)
