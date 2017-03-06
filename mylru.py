@@ -92,13 +92,10 @@ class MylruMem(object):
             state = tuple(state.astype(np.int32))
         Flag = self.isin(state,action,self.Qtable[action])
         if not Flag:
-#        if state not in self.Qtable[action].keys():
             self._add(state,action,Return)
             self.Flag_Build_New_Tree[action] = True
 
         elif Flag and self.current in self.deleted_states[action]:
-#        elif state in self.Qtable[action].keys() and state in self.deleted_states[action]:
-
             state = self.current
             self.Qtable[action][state] = max(self.Qtable[action][state],Return)
             self.deleted_states[action].remove(state)
@@ -107,16 +104,15 @@ class MylruMem(object):
             todeletestate = self.getoldest(action)
             self.deleted_states[action].append(todeletestate)
             self.age_history[action][todeletestate] = sys.maxint/2 #to ensure dont delete same state again
-        else:
-#        elif self.isin(state,action,self.Qtable[action]) and not self.isin(state,action,self.deleted_states[action]):
-#        elif state in self.Qtable[action].keys() and state not in self.deleted_states[action]:
+
+        elif Flag and self.current not in self.deleted_states[action]:
             state = self.current
             self.Qtable[action][state] = max(self.Qtable[action][state],Return)
             self.update_age(state,action)
 
-#        else:
-#            print "ERROR: state is both deleted and undeleted"
-#            assert 0 == 1
+        else:
+            print "ERROR: state is both deleted and undeleted"
+            assert 0 == 1
 
     def buildtree(self,action):
         if self.Flag_Build_New_Tree[action] == True:
@@ -155,12 +151,8 @@ class MylruMem(object):
             i = i[0]
             d = d[0]
             if 1.0*d/np.linalg.norm(state)<=1e-9:
-                temp = tuple(np.array(t.get_item_vector(i)).astype(np.int32))
-                if temp in dic:
-                    self.current = temp
-                    return True
-                else:
-                    return False
+                self.current = tuple(np.array(t.get_item_vector(i)).astype(np.int32))
+                return True
             else:
                 return False
         else:
